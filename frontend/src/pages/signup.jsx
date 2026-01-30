@@ -1,327 +1,264 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../services/api";
+import axios from "axios";
+import { User, Mail, Lock } from "lucide-react";
+import { Link, useNavigate} from "react-router-dom";
 
-function Signup() {
+export default function Signup() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
+
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
+  const navigate =useNavigate();
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match");
       return;
     }
 
-    // Validate password length
-    if (formData.password.length < 6) {
-      setMessage("Password must be at least 6 characters");
-      return;
-    }
-
-    setLoading(true);
-
     try {
-      // Send signup request to backend
-      const res = await API.post("/signup", {
+      setLoading(true);
+      const res = await axios.post("http://localhost:8000/signup", {
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
 
-      setMessage("Account created successfully! Redirecting to login...");
-      
-      // Wait 2 seconds then redirect to login
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-
+      setMessage(res.data.message || "Signup successful!");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+       setTimeout(() => {
+       navigate("/");
+       }, 1000);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Signup failed. Please try again.");
+      setMessage("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "20px"
-    }}>
-      <div style={{ 
-        maxWidth: 400, 
-        width: "100%",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        padding: "30px",
-        borderRadius: "15px",
-        boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-        backdropFilter: "blur(10px)"
-      }}>
-        <h2 style={{ 
-          textAlign: "center", 
-          color: "#333",
-          fontSize: "26px", // Same as login
-          marginBottom: "8px", // Same as login
-          fontWeight: "bold"
-        }}>
-          Resume Analyzer
-        </h2>
-        
-        <h3 style={{ 
-          textAlign: "center", 
-          color: "#555",
-          marginBottom: "12px", // Same as login
-          fontWeight: "normal",
-          fontSize: "18px" // Same as login
-        }}>
-          Create Account
-        </h3>
-        
-        <p style={{ 
-          textAlign: "center", 
-          color: "#666",
-          marginBottom: "25px", // Same as login
-          fontSize: "14px",
-          lineHeight: "1.5"
-        }}>
-          Sign up to analyze your resume instantly
-        </p>
+    <div style={pageStyle}>
+      <form onSubmit={handleSubmit} style={cardStyle}>
+        <h2 style={titleStyle}>Create Account</h2>
+        <p style={subtitleStyle}>Sign up to get started</p>
 
-        <form onSubmit={handleSubmit}>
-          {/* Name Field */}
-          <div style={{ marginBottom: "18px" }}> {/* Same as login */}
-            <label style={{ 
-              display: "block",
-              marginBottom: "6px", // Reduced
-              color: "#333",
-              fontSize: "14px",
-              fontWeight: "500"
-            }}>
-              Name
-            </label>
+        {/* Name */}
+        <div style={fieldWrapper}>
+          <label style={labelStyle}>Name</label>
+          <div style={inputWrapper}>
+            <User size={18} style={iconStyle} />
             <input
               type="text"
               name="name"
               placeholder="Enter your full name"
               value={formData.name}
               onChange={handleChange}
+              style={inputStyle}
               required
-              style={{
-                width: "100%",
-                padding: "12px", // Same as login
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                fontSize: "14px",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s",
-                backgroundColor: "#f8f9fa"
-              }}
-              onFocus={(e) => e.target.style.borderColor = "#4a6cf7"}
-              onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
             />
           </div>
+        </div>
 
-          {/* Email Field */}
-          <div style={{ marginBottom: "18px" }}> {/* Same as login */}
-            <label style={{ 
-              display: "block",
-              marginBottom: "6px", // Reduced
-              color: "#333",
-              fontSize: "14px",
-              fontWeight: "500"
-            }}>
-              Email
-            </label>
+        {/* Email */}
+        <div style={fieldWrapper}>
+          <label style={labelStyle}>Email</label>
+          <div style={inputWrapper}>
+            <Mail size={18} style={iconStyle} />
             <input
               type="email"
               name="email"
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
+              style={inputStyle}
               required
-              style={{
-                width: "100%",
-                padding: "12px", // Same as login
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                fontSize: "14px",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s",
-                backgroundColor: "#f8f9fa"
-              }}
-              onFocus={(e) => e.target.style.borderColor = "#4a6cf7"}
-              onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
             />
           </div>
+        </div>
 
-          {/* Password Field */}
-          <div style={{ marginBottom: "18px" }}> {/* Same as login */}
-            <label style={{ 
-              display: "block",
-              marginBottom: "6px", // Reduced
-              color: "#333",
-              fontSize: "14px",
-              fontWeight: "500"
-            }}>
-              Password
-            </label>
+        {/* Password */}
+        <div style={fieldWrapper}>
+          <label style={labelStyle}>Password</label>
+          <div style={inputWrapper}>
+            <Lock size={18} style={iconStyle} />
             <input
               type="password"
               name="password"
-              placeholder="Enter your password (min. 6 characters)"
+              placeholder="Create a password"
               value={formData.password}
               onChange={handleChange}
+              style={inputStyle}
               required
-              style={{
-                width: "100%",
-                padding: "12px", // Same as login
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                fontSize: "14px",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s",
-                backgroundColor: "#f8f9fa"
-              }}
-              onFocus={(e) => e.target.style.borderColor = "#4a6cf7"}
-              onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
             />
           </div>
+        </div>
 
-          {/* Confirm Password Field */}
-          <div style={{ marginBottom: "22px" }}> {/* Same as login's bottom margin */}
-            <label style={{ 
-              display: "block",
-              marginBottom: "6px", // Reduced
-              color: "#333",
-              fontSize: "14px",
-              fontWeight: "500"
-            }}>
-              Confirm Password
-            </label>
+        {/* Confirm Password */}
+        <div style={{ ...fieldWrapper, marginBottom: "22px" }}>
+          <label style={labelStyle}>Confirm Password</label>
+          <div style={inputWrapper}>
+            <Lock size={18} style={iconStyle} />
             <input
               type="password"
               name="confirmPassword"
               placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              style={inputStyle}
               required
-              style={{
-                width: "100%",
-                padding: "12px", // Same as login
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                fontSize: "14px",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s",
-                backgroundColor: "#f8f9fa"
-              }}
-              onFocus={(e) => e.target.style.borderColor = "#4a6cf7"}
-              onBlur={(e) => e.target.style.borderColor = "#e0e0e0"}
             />
           </div>
+        </div>
 
-          {/* Submit Button */}
-          <button 
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "14px", // Same as login
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              marginBottom: "22px", // Same as login
-              transition: "transform 0.2s, box-shadow 0.2s, opacity 0.3s",
-              boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)"
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.6)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
-              }
-            }}
-          >
-            {loading ? "Creating Account..." : "Sign Up"}
-          </button>
-        </form>
+        {/* Submit Button */}
+        <button type="submit" style={buttonStyle} disabled={loading}>
+          {loading ? "Creating Account..." : "Sign Up"}
+        </button>
 
-        {/* Login Link */}
-        <div style={{ 
-          textAlign: "center", 
-          fontSize: "14px",
-          color: "#666"
-        }}>
+        {/* Already have account */}
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "14px",
+            fontSize: "14px",
+            color: "#666"
+          }}
+        >
           Already have an account?{" "}
-          <Link 
-            to="/login" 
-            style={{ 
-              color: "#4a6cf7", 
+          <Link
+            to="/"
+            style={{
+              color: "#4a6cf7",
               textDecoration: "none",
-              fontWeight: "bold",
-              transition: "color 0.3s"
+              fontWeight: "600"
             }}
-            onMouseEnter={(e) => e.target.style.color = "#3a5bd9"}
-            onMouseLeave={(e) => e.target.style.color = "#4a6cf7"}
           >
             Login
           </Link>
         </div>
 
-        {/* Message Display */}
+        {/* Message */}
         {message && (
-          <div style={{ 
-            textAlign: "center", 
-            marginTop: "18px", // Same as login
-            padding: "10px", // Same as login
-            borderRadius: "8px",
-            backgroundColor: message.includes("successfully") ? "#e7f7e7" : "#f7e7e7",
-            border: `1px solid ${message.includes("successfully") ? "#a7d8a7" : "#f7c6c6"}`
-          }}>
-            <p style={{ 
-              color: message.includes("successfully") ? "#2e7d32" : "#d32f2f",
-              fontSize: "14px",
-              margin: 0
-            }}>
+          <div
+            style={{
+              marginTop: "18px",
+              padding: "10px",
+              borderRadius: "8px",
+              textAlign: "center",
+              backgroundColor: message.includes("successful")
+                ? "#e7f7e7"
+                : "#f7e7e7",
+              border: `1px solid ${
+                message.includes("successful") ? "#a7d8a7" : "#f7c6c6"
+              }`
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: "14px",
+                color: message.includes("successful")
+                  ? "#2e7d32"
+                  : "#d32f2f"
+              }}
+            >
               {message}
             </p>
           </div>
         )}
-      </div>
+      </form>
     </div>
   );
 }
 
-export default Signup;
+/* ================= STYLES ================= */
+
+const fieldWrapper = { marginBottom: "18px" };
+
+const labelStyle = {
+  marginBottom: "6px",
+  display: "block",
+  fontWeight: "700",
+  fontSize: "14px",
+  color: "#333"
+};
+
+const inputWrapper = {
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+  border: "2px solid #e0e0e0",
+  borderRadius: "10px",
+  backgroundColor: "#f8f9fa",
+  padding: "0 12px",
+  boxSizing: "border-box"
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px 8px",
+  border: "none",
+  outline: "none",
+  fontSize: "14px",
+  background: "transparent"
+};
+
+const iconStyle = { marginRight: "8px", opacity: 0.6 };
+
+const pageStyle = {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "linear-gradient(135deg, #667eea, #764ba2)"
+};
+
+const cardStyle = {
+  maxWidth: "480px",
+  width: "100%",
+  backgroundColor: "rgba(255,255,255,0.95)",
+  padding: "20px",
+  borderRadius: "15px",
+  boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+  fontFamily: "Arial, sans-serif"
+};
+
+const titleStyle = {
+  textAlign: "center",
+  marginBottom: "6px"
+};
+
+const subtitleStyle = {
+  textAlign: "center",
+  fontSize: "14px",
+  color: "#666",
+  marginBottom: "24px"
+};
+
+const buttonStyle = {
+  width: "100%",
+  marginTop: "10px",
+  padding: "12px",
+  borderRadius: "10px",
+  border: "none",
+  background: "linear-gradient(135deg, #667eea, #764ba2)",
+  color: "#fff",
+  fontSize: "16px",
+  fontWeight: "600",
+  cursor: "pointer"
+};

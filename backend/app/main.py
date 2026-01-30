@@ -13,6 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.ai_feedback import analyze_resume
 from dotenv import load_dotenv
 from app.db import get_resume_text
+from datetime import datetime, timedelta
+import uuid
+from app.schemas import ForgotPasswordRequest, ResetPasswordRequest
 
 
 load_dotenv()
@@ -78,6 +81,55 @@ def login(user: LoginRequest, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer"
     }
+@app.post("/forgot-password")
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(User.email == data.email).first()
+
+    # Do NOT reveal if user exists
+    if not user:
+        return {"message": "If the email exists, a reset link has been sent"}
+
+    token = str(uuid.uuid4())
+
+    user.reset_token = token
+    user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
+
+    db.commit()
+
+    reset_link = f"http://localhost:5173/reset-password/{token}"
+
+    # TODO: integrate email service later
+    print("🔐 PASSWORD RESET LINK:", reset_link)
+
+    return {"message": "Password reset link sent"}
+
+@app.post("/reset-password")
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(User.reset_token == data.token).first()
+
+    if (
+        not user or 
+        not user.reset_token_expiry or 
+        user.reset_token_expiry < datetime.utcnow()
+    ):
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
+    if len(data.new_password) > 72:
+        raise HTTPException(status_code=400, detail="Password too long")
+
+    user.password = hash_password(data.new_password)
+    user.reset_token = None
+    user.reset_token_expiry = None
+
+    db.commit()
+
+    return {"message": "Password reset successful"}
+
 
 @app.get("/me")
 def get_profile(email: str = Depends(verify_token)):

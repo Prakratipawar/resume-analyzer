@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class LoginRequest(BaseModel):
     email: str
@@ -12,3 +12,10 @@ class JobCreate(BaseModel):
 class JDRequest(BaseModel):
     resume_id: int
     job_description: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str

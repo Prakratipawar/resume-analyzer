@@ -56,12 +56,12 @@ function Login() {
           marginBottom: "8px",
           fontWeight: "bold"
         }}>
-          AI Resume Analyzer
+          Resume Analyzer
         </h2>
         
         <h3 style={{ 
           textAlign: "center", 
-          color: "#555",
+          color: "#333",
           marginBottom: "12px",
           fontWeight: "bold",
           fontSize: "20px"

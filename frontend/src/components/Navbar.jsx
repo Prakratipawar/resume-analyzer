@@ -1,24 +1,29 @@
-import { Link } from "react-router-dom";
-
 function Navbar() {
   return (
-    <div style={navStyle}>
-      <h3>AI Resume Analyzer</h3>
-      <div>
-        <Link to="/dashboard">Dashboard</Link>{" | "}
-        <Link to="/jd-match">JD match</Link>{" | "}
-        <Link to="/upload">Upload Resume</Link>
-      </div>
-    </div>
+    <header style={headerStyle}>
+      <h1 style={titleStyle}>AI Resume Analyzer</h1>
+    </header>
   );
 }
 
-const navStyle = {
+const headerStyle = {
+  height: "70px",
   display: "flex",
-  justifyContent: "space-between",
-  padding: "15px 40px",
-  borderBottom: "1px solid #ddd",
-  marginBottom: 30
+  alignItems: "center",
+  justifyContent: "center",
+  borderBottom: "1px solid #e5e7eb",
+  backgroundColor: "#ffffff",
+  position: "sticky",
+  top: 0,
+  zIndex: 100
+};
+
+const titleStyle = {
+  fontSize: "20px",
+  fontWeight: "700",
+  color: "#4a6cf7",
+  margin: 0,
+  letterSpacing: "0.5px"
 };
 
 export default Navbar;
