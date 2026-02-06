@@ -1,4 +1,4 @@
-import React from "react";
+/*currently this file is not in use */
 
 const ResumeScore = ({ feedback }) => {
   if (!feedback) return null;

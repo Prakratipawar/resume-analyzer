@@ -1,60 +1,54 @@
 import { useState } from "react";
-import API from "../services/api";
-import { useNavigate, useParams } from "react-router-dom";
+import API from "../../services/api";
+import { Link } from "react-router-dom";
 
-export default function ResetPassword() {
-  const { token } = useParams();   // 🔥 get token from URL
-  const [password, setPassword] = useState("");
+export default function ForgotPassword() {
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
-  const handleReset = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await API.post("/reset-password", {
-       token,
-       new_password: password,
-       });
-
-
-      setMessage(res.data.message);
-
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-
+      const res = await API.post("/forgot-password", { email });
+      setMessage(res.data.message || "Reset link sent!");
     } catch (err) {
-      setMessage(err.response?.data?.detail || "Reset failed");
+      setMessage(err.response?.data?.detail || "Error occurred");
     }
   };
 
   return (
     <div style={pageStyle}>
       <div style={cardStyle}>
-        <h2>Create New Password</h2>
+        <h2>Reset Password</h2>
+        <p style={{ fontSize: "14px", marginBottom: "20px" }}>
+          Enter your registered email
+        </p>
 
-        <form onSubmit={handleReset}>
+        <form onSubmit={handleSubmit}>
           <input
-            type="password"
-            placeholder="New Password"
-            value={password}
+            type="email"
+            placeholder="Enter email"
+            value={email}
             required
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             style={inputStyle}
           />
 
           <button type="submit" style={buttonStyle}>
-            Reset Password
+            Send Reset Link
           </button>
         </form>
 
         {message && <p style={{ marginTop: "15px" }}>{message}</p>}
+
+        <Link to="/" style={{ fontSize: "13px" }}>
+          Back to Login
+        </Link>
       </div>
     </div>
   );
 }
-
 
 const pageStyle = {
   minHeight: "100vh",

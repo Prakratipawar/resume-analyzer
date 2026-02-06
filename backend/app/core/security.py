@@ -3,13 +3,9 @@ from jose import jwt
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES 
 
 security = HTTPBearer()
-
-SECRET_KEY = "supersecretkey123"   # later we will move this to env file
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

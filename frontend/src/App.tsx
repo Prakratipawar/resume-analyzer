@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
 import UploadResume from "./pages/UploadResume";
 import ResumePage from "./pages/ResumePage";
 import Dashboard from "./pages/Dashboard";
-import Navbar from "./components/Navbar";
-import JDMatch from "./pages/JDMatch";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import Navbar from "./components/common/Navbar";
+import JDMatch from "./components/JobMatch/JDMatch";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // Layout component that conditionally shows Navbar
 function Layout() {
@@ -26,7 +26,7 @@ function Layout() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/resume-feedback" element={<ResumePage />} />
+        {/* <Route path="/resume-feedback" element={<ResumePage />} /> */}
       </Routes>
     </>
   );

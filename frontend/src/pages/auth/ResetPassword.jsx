@@ -1,54 +1,60 @@
 import { useState } from "react";
-import API from "../services/api";
-import { Link } from "react-router-dom";
+import API from "../../services/api";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
+export default function ResetPassword() {
+  const { token } = useParams();   
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await API.post("/forgot-password", { email });
-      setMessage(res.data.message || "Reset link sent!");
+      const res = await API.post("/reset-password", {
+       token,
+       new_password: password,
+       });
+
+
+      setMessage(res.data.message);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+
     } catch (err) {
-      setMessage(err.response?.data?.detail || "Error occurred");
+      setMessage(err.response?.data?.detail || "Reset failed");
     }
   };
 
   return (
     <div style={pageStyle}>
       <div style={cardStyle}>
-        <h2>Reset Password</h2>
-        <p style={{ fontSize: "14px", marginBottom: "20px" }}>
-          Enter your registered email
-        </p>
+        <h2>Create New Password</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleReset}>
           <input
-            type="email"
-            placeholder="Enter email"
-            value={email}
+            type="password"
+            placeholder="New Password"
+            value={password}
             required
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             style={inputStyle}
           />
 
           <button type="submit" style={buttonStyle}>
-            Send Reset Link
+            Reset Password
           </button>
         </form>
 
         {message && <p style={{ marginTop: "15px" }}>{message}</p>}
-
-        <Link to="/" style={{ fontSize: "13px" }}>
-          Back to Login
-        </Link>
       </div>
     </div>
   );
 }
+
 
 const pageStyle = {
   minHeight: "100vh",
