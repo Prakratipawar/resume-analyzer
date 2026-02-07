@@ -7,7 +7,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,8 +20,6 @@ function Login() {
 
       localStorage.setItem("token", res.data.access_token);
       setMessage("Login successful!");
-
-      // redirect to upload page
       navigate("/upload");
 
     } catch (err) {
@@ -70,7 +67,6 @@ function Login() {
         </h3>
 
         <form onSubmit={handleLogin}>
-          {/* Email Field with Mail Icon */}
           <div style={{ marginBottom: "18px" }}>
             <div style={{ 
               display: "flex", 
@@ -118,8 +114,6 @@ function Login() {
               />
             </div>
           </div>
-
-          {/* Password Field with Lock Icon */}
           <div style={{ marginBottom: "18px" }}>
             <div style={{ 
               display: "flex", 

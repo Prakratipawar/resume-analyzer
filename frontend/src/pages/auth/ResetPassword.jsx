@@ -55,6 +55,7 @@ export default function ResetPassword() {
   );
 }
 
+/* ================= STYLES ================= */
 
 const pageStyle = {
   minHeight: "100vh",

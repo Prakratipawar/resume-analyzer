@@ -98,6 +98,8 @@ export default function JDMatchResults({ result, tryAnother, resetForm, handleBa
   );
 }
 
+/* ================= STYLES ================= */
+
 const pageStyle = {
   minHeight: "calc(100vh - 70px)",
   display: "flex",

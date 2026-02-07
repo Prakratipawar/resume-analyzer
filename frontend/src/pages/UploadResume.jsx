@@ -75,6 +75,8 @@ function UploadResume() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const pageStyle = {
   minHeight: "calc(100vh - 70px)",
   display: "flex",

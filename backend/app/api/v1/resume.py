@@ -53,7 +53,7 @@ def parse_resume(
     text = extract_text_from_pdf(file_path)
     return {
         "filename": filename,
-        "resume_text": text[:2000]  # preview first 2000 chars
+        "resume_text": text[:2000]  
     }
 
 @router.get("/analyze-resume/{filename}")
@@ -66,8 +66,8 @@ def analyze_uploaded_resume(
         return {"error": "Resume not found"}
 
     text = extract_text_from_pdf(file_path)
-    result = analyze_resume_simple(text)  # Use the simple version
-    return {
+    result = analyze_resume_simple(text)  
+    return{
         "filename": filename,
         "analysis": result
     }

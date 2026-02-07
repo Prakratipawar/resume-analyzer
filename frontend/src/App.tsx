@@ -2,14 +2,12 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import UploadResume from "./pages/UploadResume";
-import ResumePage from "./pages/ResumePage";
 import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/common/Navbar";
 import JDMatch from "./components/JobMatch/JDMatch";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 
-// Layout component that conditionally shows Navbar
 function Layout() {
   const location = useLocation();
   const hideNavbarPaths = ["/", "/signup","/forgot-password","/reset-password/:token"];

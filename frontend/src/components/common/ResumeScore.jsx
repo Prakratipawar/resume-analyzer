@@ -56,5 +56,4 @@ const ResumeScore = ({ feedback }) => {
     </div>
   );
 };
-
 export default ResumeScore;

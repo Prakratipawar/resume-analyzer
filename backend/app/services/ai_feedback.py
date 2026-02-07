@@ -32,6 +32,7 @@
 #     )
 
 #     return response.choices[0].message.content
+
 def analyze_resume(resume_text: str):
     return {
         "score": 82,

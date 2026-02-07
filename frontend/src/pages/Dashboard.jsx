@@ -72,6 +72,8 @@ function Dashboard() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const cardStyle = {
   border: "1px solid #ddd",
   borderRadius: 10,

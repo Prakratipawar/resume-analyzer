@@ -10,11 +10,9 @@ STOPWORDS = {
     "responsibilities", "role", "job", "candidate"
 }
 
-# ---------- Skill Extraction ----------
 def extract_skills(text):
     text = text.lower()
 
-    # tokenize
     words = re.findall(r"[a-zA-Z+#.]+", text)
 
     skills = [
@@ -25,7 +23,6 @@ def extract_skills(text):
     return list(set(skills))
 
 
-# ---------- Resume Analysis ----------
 def analyze_resume(text):
     skills = extract_skills(text)
 
@@ -46,12 +43,10 @@ def analyze_resume(text):
     }
 
 
-# ---------- JD Skill Extraction ----------
 def extract_job_skills(job_text):
     return extract_skills(job_text)
 
 
-# ---------- JD Matching ----------
 def match_resume_with_job(resume_text, job_text):
     resume_skills = extract_skills(resume_text)
     job_skills = extract_skills(job_text)

@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.core.security import hash_password, verify_password, create_access_token, verify_token
 from app.models.user import User
 from app.schemas.schemas import UserCreate, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest
+from app.core.config import FRONTEND_URL
 
 router = APIRouter()
 
@@ -42,7 +43,6 @@ def login(user: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/forgot-password")
 def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
-    # Do NOT reveal if user exists
     if not user:
         return {"message": "If the email exists, a reset link has been sent"}
 
@@ -50,8 +50,7 @@ def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
     user.reset_token = token
     user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
     db.commit()
-
-    reset_link = f"http://localhost:5173/reset-password/{token}"
+    reset_link = f"{FRONTEND_URL}/reset-password/{token}"
     print("🔐 PASSWORD RESET LINK:", reset_link)
     return {"message": "Password reset link sent"}
 

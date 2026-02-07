@@ -50,6 +50,8 @@ export default function ForgotPassword() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const pageStyle = {
   minHeight: "100vh",
   display: "flex",

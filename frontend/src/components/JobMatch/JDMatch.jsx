@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import JDMatchInput from "./JDMatchInput.jsx";
 import JDMatchResults from "./JDMatchResults.jsx";
@@ -19,8 +19,9 @@ export default function JDMatch() {
       setLoading(true);
       const resumeId = localStorage.getItem("resume_id");
 
-      const res = await axios.post("http://localhost:8000/api/v1/match-jd", {
-        resume_id: resumeId,
+
+
+      const res = await API.post("/match-jd", {        resume_id: resumeId,
         job_description: jobDescription
       });
 
