@@ -253,6 +253,10 @@ feedback.
 
 ![Keyword matching results](docs/images/match-results.png)
 
+## Technical Writing
+
+- [Build a Keyword-Based Resume Analyzer with FastAPI and React](https://dev.to/prakrati_pawar_11/build-a-keyword-based-resume-analyzer-with-fastapi-and-react-kkl) — A step-by-step tutorial covering FastAPI, React, PostgreSQL, JWT authentication, PDF processing, and explainable keyword matching.
+
 ## Author
 
 **Prakrati Pawar**
