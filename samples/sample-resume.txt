@@ -1,0 +1,17 @@
+SAMIRA SHAH
+samira.shah@example.com
+
+SUMMARY
+Backend developer who builds maintainable web services.
+
+SKILLS
+Python, FastAPI, PostgreSQL, SQLAlchemy, Git and React
+
+EXPERIENCE
+Developed REST APIs and connected backend services to PostgreSQL.
+
+PROJECTS
+Created a task-management API with authentication and database persistence.
+
+EDUCATION
+Bachelor of Computer Science

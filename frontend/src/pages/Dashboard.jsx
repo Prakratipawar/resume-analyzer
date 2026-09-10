@@ -30,7 +30,7 @@ function Dashboard() {
 
   return (
     <div style={{ maxWidth: 1000, margin: "60px auto" }}>
-      <h1>AI Resume Dashboard</h1>
+      <h1>Resume Analysis Dashboard</h1>
 
       <div style={cardStyle}>
         <h2>Resume Score</h2>

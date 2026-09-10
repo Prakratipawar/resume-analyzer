@@ -1,68 +1,93 @@
-import spacy
+"""Deterministic keyword extraction and resume-to-job matching."""
+
 import re
 
-nlp = spacy.load("en_core_web_sm")
 
-STOPWORDS = {
-    "and", "or", "with", "experience", "knowledge", "developer", "engineer",
-    "years", "good", "strong", "expert", "hands-on", "using", "working",
-    "ability", "skills", "familiar", "required", "must", "should",
-    "responsibilities", "role", "job", "candidate"
+# Keep this catalog explicit so readers can understand and extend the matcher.
+SKILL_ALIASES = {
+    "amazon web services": "aws", "aws": "aws", "c sharp": "c#", "c#": "c#",
+    "c plus plus": "c++", "c++": "c++", "ci/cd": "ci/cd",
+    "continuous integration": "ci/cd", "css": "css", "django": "django",
+    "docker": "docker", "fastapi": "fastapi", "flask": "flask", "git": "git",
+    "github": "github", "google cloud": "gcp", "gcp": "gcp", "html": "html",
+    "java": "java", "javascript": "javascript", "kubernetes": "kubernetes",
+    "linux": "linux", "machine learning": "machine learning", "mongodb": "mongodb",
+    "mysql": "mysql", "next.js": "next.js", "node.js": "node.js",
+    "nlp": "natural language processing",
+    "natural language processing": "natural language processing",
+    "postgres": "postgresql", "postgresql": "postgresql", "power bi": "power bi",
+    "python": "python", "react": "react", "redis": "redis",
+    "rest api": "rest api", "rest apis": "rest api",
+    "restful api": "rest api", "restful apis": "rest api", "sql": "sql",
+    "sqlalchemy": "sqlalchemy", "tailwind": "tailwind css",
+    "tailwind css": "tailwind css", "typescript": "typescript",
 }
 
-def extract_skills(text):
-    text = text.lower()
 
-    words = re.findall(r"[a-zA-Z+#.]+", text)
+def _contains_keyword(text: str, keyword: str) -> bool:
+    pattern = rf"(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])"
+    return re.search(pattern, text, flags=re.IGNORECASE) is not None
 
-    skills = [
-        w for w in words
-        if len(w) > 2 and w not in STOPWORDS
+
+def extract_skills(text: str) -> list[str]:
+    """Return normalized skills from the explicit catalog."""
+    if not text:
+        return []
+    matches = {
+        normalized
+        for keyword, normalized in SKILL_ALIASES.items()
+        if _contains_keyword(text, keyword)
+    }
+    return sorted(matches)
+
+
+def analyze_resume(text: str) -> dict:
+    """Provide transparent, rule-based feedback about a resume."""
+    normalized_text = text.lower()
+    expected_sections = {
+        "summary": ("summary", "profile", "objective"),
+        "experience": ("experience", "employment", "work history"),
+        "education": ("education", "qualification"),
+        "skills": ("skills", "technical skills"),
+        "projects": ("projects", "project experience"),
+    }
+    present_sections = [
+        section
+        for section, labels in expected_sections.items()
+        if any(label in normalized_text for label in labels)
     ]
-
-    return list(set(skills))
-
-
-def analyze_resume(text):
+    missing_sections = sorted(set(expected_sections) - set(present_sections))
     skills = extract_skills(text)
-
-    score = min(len(skills) * 5, 100)
-
-    suggestions = []
-    if "projects" not in text.lower():
-        suggestions.append("Add a Projects section")
-    if "experience" not in text.lower():
-        suggestions.append("Add an Experience section")
-    if len(skills) < 10:
-        suggestions.append("Add more technical skills")
+    score = round(
+        (len(present_sections) / len(expected_sections)) * 60
+        + min(len(skills), 10) / 10 * 40
+    )
+    suggestions = [f"Add a clear {section.title()} section." for section in missing_sections]
+    if len(skills) < 5:
+        suggestions.append("Add relevant technical skills that you can demonstrate.")
 
     return {
         "skills": skills,
         "score": score,
-        "suggestions": suggestions
+        "present_sections": present_sections,
+        "missing_sections": missing_sections,
+        "suggestions": suggestions,
+        "score_explanation": "60% section completeness and 40% recognized skill coverage.",
     }
 
 
-def extract_job_skills(job_text):
-    return extract_skills(job_text)
-
-
-def match_resume_with_job(resume_text, job_text):
-    resume_skills = extract_skills(resume_text)
-    job_skills = extract_skills(job_text)
-
-    matched = list(set(resume_skills) & set(job_skills))
-    missing = list(set(job_skills) - set(resume_skills))
-
-    if not job_skills:
-        match_percentage = 0
-    else:
-        match_percentage = round((len(matched) / len(job_skills)) * 100, 2)
-
+def match_resume_with_job(resume_text: str, job_text: str) -> dict:
+    """Compare normalized skill keywords; this is not an ATS prediction."""
+    resume_skills = set(extract_skills(resume_text))
+    job_skills = set(extract_skills(job_text))
+    matched = sorted(resume_skills & job_skills)
+    missing = sorted(job_skills - resume_skills)
+    match_percentage = round(len(matched) / len(job_skills) * 100, 2) if job_skills else 0
     return {
-        "resume_skills": resume_skills,
-        "job_skills": job_skills,
+        "resume_skills": sorted(resume_skills),
+        "job_skills": sorted(job_skills),
         "matched_skills": matched,
         "missing_skills": missing,
-        "match_percentage": match_percentage
+        "match_percentage": match_percentage,
+        "disclaimer": "This percentage measures keyword overlap only; it is not an ATS or hiring prediction.",
     }

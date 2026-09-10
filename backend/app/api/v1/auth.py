@@ -7,6 +7,7 @@ from app.core.security import hash_password, verify_password, create_access_toke
 from app.models.user import User
 from app.schemas.schemas import UserCreate, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest
 from app.core.config import FRONTEND_URL
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter()
 
@@ -15,6 +16,9 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     if len(user.password) > 72:
         raise HTTPException(status_code=400, detail="Password too long (max 72 characters)")
 
+    if db.query(User).filter(User.email == user.email).first():
+        raise HTTPException(status_code=409, detail="An account with this email already exists")
+
     hashed_password = hash_password(user.password)
     new_user = User(
         name=user.name,
@@ -22,7 +26,11 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         password=hashed_password
     )
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="An account with this email already exists")
     db.refresh(new_user)
     return {"message": "User registered successfully"}
 

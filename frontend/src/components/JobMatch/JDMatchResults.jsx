@@ -15,7 +15,7 @@ export default function JDMatchResults({ result, tryAnother, resetForm, handleBa
         <div style={scoreCard}>
           <div style={scoreCircle}>
             <span style={scorePercent}>{result.match_percentage}%</span>
-            <span style={scoreLabel}>Match Score</span>
+            <span style={scoreLabel}>Keyword Match</span>
           </div>
           <div style={scoreDetails}>
             <div style={scoreStat}>
@@ -78,9 +78,12 @@ export default function JDMatchResults({ result, tryAnother, resetForm, handleBa
           <div style={recommendationCard}>
             <h4 style={{ marginBottom: "12px", color: "#333" }}>💡 Recommendations</h4>
             <ul style={recommendationList}>
-              <li>Consider adding these missing skills to your resume</li>
-              <li>Highlight your matched skills more prominently</li>
-              <li>Tailor your experience to better match the job requirements</li>
+              <li>
+                If you genuinely have experience with a missing skill, mention it
+                clearly in your resume
+              </li>
+              <li>Consider learning relevant missing skills for your target role</li>
+              <li>Highlight matched skills using truthful project or work examples</li>
             </ul>
           </div>
         )}

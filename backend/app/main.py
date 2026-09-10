@@ -2,8 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import auth, resume, jobs
 from app.core.config import FRONTEND_URL
+from app.core.database import Base, engine
+from app.models import job as job_model  # noqa: F401
+from app.models import resume as resume_model  # noqa: F401
+from app.models import user as user_model  # noqa: F401
+Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AI Resume Analyzer API")
+app = FastAPI(title="Keyword-Based Resume Analyzer API")
 
 app.add_middleware(
     CORSMiddleware,

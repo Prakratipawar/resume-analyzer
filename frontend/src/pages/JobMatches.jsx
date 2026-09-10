@@ -31,7 +31,7 @@ function JobMatches() {
 
   return (
     <div style={{ maxWidth: 800, margin: "50px auto" }}>
-      <h2>AI Job Matches</h2>
+      <h2>Keyword-Based Job Matches</h2>
 
       {loading && <p>Loading matches...</p>}
       {!loading && matches.length === 0 && <p>No matches found</p>}

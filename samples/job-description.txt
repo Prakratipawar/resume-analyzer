@@ -1,0 +1,5 @@
+Backend Developer
+
+We are looking for a backend developer who can build REST APIs using Python
+and FastAPI. The candidate should understand PostgreSQL, SQLAlchemy, Docker,
+Git and Linux. Experience with React is helpful but not required.

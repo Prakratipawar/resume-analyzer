@@ -5,11 +5,16 @@ from app.models.job import Job
 from app.models.resume import Resume
 from app.schemas.schemas import JobCreate, JDRequest
 from app.services.ai_analyzer import match_resume_with_job
+from app.core.security import verify_token
 
 router = APIRouter()
 
 @router.post("/add-job")
-def add_job(job: JobCreate, db: Session = Depends(get_db)):
+def add_job(
+    job: JobCreate,
+    email: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
     new_job = Job(
         title=job.title,
         company=job.company,
@@ -20,10 +25,16 @@ def add_job(job: JobCreate, db: Session = Depends(get_db)):
     return {"message": "Job added successfully"}
 
 @router.get("/match-jobs/{resume_id}")
-def match_jobs(resume_id: int, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+def match_jobs(
+    resume_id: int,
+    email: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    resume = db.query(Resume).filter(
+        Resume.id == resume_id, Resume.user_email == email
+    ).first()
     if not resume:
-        return {"error": "Resume not found"}
+        raise HTTPException(status_code=404, detail="Resume not found")
 
     jobs = db.query(Job).all()
     results = []
@@ -37,10 +48,16 @@ def match_jobs(resume_id: int, db: Session = Depends(get_db)):
     return {"matches": results}
 
 @router.post("/match-jd")
-def match_with_jd(data: JDRequest, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == data.resume_id).first()
+def match_with_jd(
+    data: JDRequest,
+    email: str = Depends(verify_token),
+    db: Session = Depends(get_db),
+):
+    resume = db.query(Resume).filter(
+        Resume.id == data.resume_id, Resume.user_email == email
+    ).first()
     if not resume:
-        return {"error": "Resume not found"}
+        raise HTTPException(status_code=404, detail="Resume not found")
 
     result = match_resume_with_job(resume.text, data.job_description)
     return result

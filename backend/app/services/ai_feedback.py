@@ -1,57 +1,18 @@
-# from openai import OpenAI
-# import os
-# from dotenv import load_dotenv
+"""Rule-based feedback kept separate from job-description matching."""
+
+from app.services.ai_analyzer import analyze_resume as analyze_resume_rules
 
 
-# load_dotenv()
-# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# def analyze_resume(resume_text):
-#     prompt = f"""
-#     You are an expert technical recruiter.
-
-#     Analyze the following resume and provide:
-#     1. Resume quality score out of 100
-#     2. Strengths
-#     3. Weaknesses
-#     4. Missing skills
-#     5. Improvement suggestions
-#     6. ATS optimization tips
-
-#     Resume:
-#     {resume_text}
-#     """
-
-#     response = client.chat.completions.create(
-#         model="gpt-4o-mini",
-#         messages=[
-#             {"role": "system", "content": "You are a resume expert"},
-#             {"role": "user", "content": prompt}
-#         ],
-#         temperature=0.4
-#     )
-
-#     return response.choices[0].message.content
-
-def analyze_resume(resume_text: str):
+def analyze_resume(resume_text: str) -> dict:
+    result = analyze_resume_rules(resume_text)
+    strengths = [f"Includes a {name.title()} section" for name in result["present_sections"]]
+    if result["skills"]:
+        strengths.append(f"Recognized skills: {', '.join(result['skills'])}")
+    weaknesses = [f"Missing a clear {name.title()} section" for name in result["missing_sections"]]
     return {
-        "score": 82,
-        "strengths": [
-            "Strong Python and backend development skills",
-            "Experience with FastAPI and SQLAlchemy",
-            "Good understanding of REST APIs",
-            "Hands-on project experience"
-        ],
-        "weaknesses": [
-            "Resume summary could be more impactful",
-            "Lack of quantified achievements",
-            "Project descriptions can be more detailed"
-        ],
-        "suggestions": [
-            "Add measurable results (e.g., improved performance by 30%)",
-            "Include GitHub and portfolio links",
-            "Highlight leadership or teamwork experience",
-            "Optimize resume for ATS keywords"
-        ],
-        "overall_feedback": "Your resume shows strong technical potential. With better structure and quantified achievements, it can become highly competitive."
+        "score": result["score"],
+        "strengths": strengths or ["The resume contains readable text"],
+        "weaknesses": weaknesses,
+        "suggestions": result["suggestions"],
+        "overall_feedback": result["score_explanation"],
     }
